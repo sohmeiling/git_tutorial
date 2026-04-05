@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Git & GitHub Setup Tutorial</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #0d1117;
+      --bg-card:   #161b22;
+      --bg-code:   #1e2430;
+      --border:    #30363d;
+      --accent:    #58a6ff;
+      --accent2:   #3fb950;
+      --accent3:   #f78166;
+      --accent4:   #d2a8ff;
+      --text:      #e6edf3;
+      --text-muted:#8b949e;
+      --radius:    10px;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Sora', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.75; font-size: 15px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Layout ── */
+    .layout { display: grid; grid-template-columns: 256px 1fr; min-height: 100vh; max-width: 1160px; margin: 0 auto; }
+
+    /* ── Sidebar ── */
+    .sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.2rem; border-right: 1px solid var(--border); background: var(--bg); }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .sidebar-section-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin: 1.4rem 0 0.4rem 0.6rem; }
+    .sidebar nav ul { list-style: none; }
+    .sidebar nav ul li a { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.6rem; border-radius: 6px; font-size: 0.81rem; color: var(--text-muted); transition: background 0.15s, color 0.15s; }
+    .sidebar nav ul li a:hover,
+    .sidebar nav ul li a.active { background: rgba(88,166,255,0.1); color: var(--accent); text-decoration: none; }
+    .step-badge { width: 18px; height: 18px; border-radius: 50%; background: var(--border); font-size: 0.6rem; font-weight: 700; display: grid; place-items: center; flex-shrink: 0; color: var(--text-muted); font-family: var(--mono); }
+
+    /* ── Main ── */
+    main { padding: 3rem 3rem 6rem; }
+
+    /* ── Hero ── */
+    .hero { margin-bottom: 3.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hero-label { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); background: rgba(88,166,255,0.1); padding: 0.25rem 0.7rem; border-radius: 20px; margin-bottom: 1rem; }
+    .hero h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.8rem; }
+    .hero p { color: var(--text-muted); max-width: 580px; font-size: 0.95rem; }
+    .prereq-box { margin-top: 1.5rem; display: flex; align-items: flex-start; gap: 0.8rem; padding: 1rem 1.2rem; background: rgba(63,185,80,0.07); border: 1px solid rgba(63,185,80,0.25); border-radius: var(--radius); font-size: 0.85rem; color: var(--text-muted); }
+    .prereq-box strong { color: var(--accent2); }
+
+    /* ── Section ── */
+    .section { margin-bottom: 4rem; }
+    .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .section-number { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; color: var(--accent); background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.25); padding: 0.25rem 0.6rem; border-radius: 20px; }
+    .section h2 { font-size: 1.4rem; font-weight: 700; }
+    .section h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin: 1.8rem 0 0.6rem; padding-top: 0.2rem; }
+    .section p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.8rem; }
+
+    /* ── Steps ── */
+    .steps { display: flex; flex-direction: column; gap: 1.2rem; }
+    .step { display: grid; grid-template-columns: 36px 1fr; gap: 1rem; align-items: start; }
+    .step-dot { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-code); border: 2px solid var(--border); display: grid; place-items: center; font-family: var(--mono); font-size: 0.75rem; font-weight: 700; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .step-dot.sm { width: 26px; height: 26px; font-size: 0.65rem; }
+    .step-body p { margin-bottom: 0.4rem; }
+    .step-body p:last-child { margin-bottom: 0; }
+
+    /* ── Sub-section label ── */
+    .sub-section-label {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.95rem; font-weight: 700; color: var(--text);
+      margin: 2rem 0 0.8rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sub-section-label .badge {
+      font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+      background: rgba(88,166,255,0.1); color: var(--accent);
+      border: 1px solid rgba(88,166,255,0.25);
+      padding: 0.15rem 0.5rem; border-radius: 20px;
+    }
+
+    /* ── Code block ── */
+    .code-block { position: relative; margin: 0.8rem 0 1.2rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-code); overflow: hidden; }
+    .code-block-header { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); }
+    .code-lang { font-family: var(--mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .copy-btn { display: flex; align-items: center; gap: 0.35rem; font-family: var(--mono); font-size: 0.7rem; font-weight: 600; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.6rem; cursor: pointer; transition: all 0.15s; }
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .copy-btn.copied { color: var(--accent2); border-color: var(--accent2); }
+    .code-block pre { padding: 1rem 1.2rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.7; color: var(--text); }
+    .code-block.no-copy .code-block-header { justify-content: flex-start; }
+
+    /* ── Inline code & kbd ── */
+    code.inline { font-family: var(--mono); font-size: 0.8em; background: var(--bg-code); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; color: var(--accent3); }
+    kbd { background: var(--bg-code); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 0.1em 0.45em; font-size: 0.8em; font-family: var(--mono); color: var(--text-muted); }
+
+    /* ── Callout ── */
+    .callout { display: flex; gap: 0.8rem; padding: 0.9rem 1.1rem; border-radius: var(--radius); font-size: 0.85rem; margin: 1rem 0; }
+    .callout.info   { background: rgba(88,166,255,0.07);  border: 1px solid rgba(88,166,255,0.2);  color: var(--text-muted); }
+    .callout.tip    { background: rgba(63,185,80,0.07);   border: 1px solid rgba(63,185,80,0.2);   color: var(--text-muted); }
+    .callout.warn   { background: rgba(247,129,102,0.07); border: 1px solid rgba(247,129,102,0.2); color: var(--text-muted); }
+    .callout.purple { background: rgba(210,168,255,0.07); border: 1px solid rgba(210,168,255,0.2); color: var(--text-muted); }
+    .callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .callout p { margin: 0; }
+    .callout p + p { margin-top: 0.4rem; }
+    .callout strong { color: var(--text); }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+    .tab-btn { font-family: var(--sans); font-size: 0.82rem; font-weight: 600; color: var(--text-muted); background: none; border: none; border-bottom: 2px solid transparent; padding: 0.6rem 1.2rem; cursor: pointer; margin-bottom: -1px; transition: all 0.15s; }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* ── Extension cards ── */
+    .ext-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .ext-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: 0.25rem; }
+    .ext-card-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem; }
+    .ext-icon { width: 34px; height: 34px; border-radius: 6px; display: grid; place-items: center; font-size: 1.15rem; flex-shrink: 0; }
+    .ext-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .ext-author { font-size: 0.72rem; color: var(--text-muted); font-family: var(--mono); }
+    .ext-desc { font-size: 0.8rem; color: var(--text-muted); }
+    .ext-badge { display: inline-block; font-size: 0.65rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 20px; align-self: flex-start; margin-top: 0.3rem; }
+    .ext-badge.required { background: rgba(88,166,255,0.15); color: var(--accent);  border: 1px solid rgba(88,166,255,0.3); }
+    .ext-badge.optional { background: rgba(63,185,80,0.10);  color: var(--accent2); border: 1px solid rgba(63,185,80,0.25); }
+
+    /* ── SSH flow diagram ── */
+    .ssh-flow { display: flex; align-items: stretch; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 1rem 0; }
+    .ssh-flow-item { flex: 1; padding: 1.1rem 0.8rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+    .ssh-flow-item .icon { font-size: 1.6rem; }
+    .ssh-flow-item .lbl { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+    .ssh-flow-item .sublbl { font-size: 0.68rem; color: var(--text-muted); font-family: var(--mono); }
+    .ssh-flow-mid { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.8rem 1rem; background: rgba(210,168,255,0.05); border-left: 1px solid var(--border); border-right: 1px solid var(--border); gap: 0.2rem; }
+    .ssh-flow-mid .icon { font-size: 1.2rem; }
+    .ssh-flow-mid .lbl { font-size: 0.68rem; color: var(--accent4); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    /* ── Terminal command table ── */
+    .cmd-grid { display: grid; grid-template-columns: auto 1fr auto; gap: 0; margin: 1rem 0 1.4rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .cmd-grid-header { display: contents; }
+    .cmd-grid-header > div { background: var(--bg-code); padding: 0.55rem 1rem; font-family: var(--mono); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .cmd-row { display: contents; }
+    .cmd-row > div { padding: 0.7rem 1rem; border-bottom: 1px solid rgba(48,54,61,0.5); font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: flex-start; }
+    .cmd-row:last-child > div { border-bottom: none; }
+    .cmd-row > div:first-child { font-family: var(--mono); color: var(--accent3); white-space: nowrap; font-size: 0.8rem; align-items: center; }
+    .cmd-row > div:last-child { font-family: var(--mono); color: var(--text-muted); font-size: 0.78rem; white-space: nowrap; align-items: center; }
+    .cmd-note { font-style: italic; }
+
+    /* ── OS pill for cmd table ── */
+    .os-pill { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 10px; background: var(--border); color: var(--text-muted); margin-left: 0.3rem; vertical-align: middle; font-style: normal; }
+
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+    /* ── Git state flow diagram ── */
+    .git-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 0; margin: 1.2rem 0; }
+    .git-flow-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 0.8rem; text-align: center; }
+    .git-flow-box .icon  { font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+    .git-flow-box .label { font-size: 0.85rem; font-weight: 700; color: var(--text); display: block; }
+    .git-flow-box .sublabel { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 0.2rem; }
+    .git-flow-box.untracked { border-color: rgba(247,129,102,0.4); background: rgba(247,129,102,0.05); }
+    .git-flow-box.staged    { border-color: rgba(63,185,80,0.4);   background: rgba(63,185,80,0.05);   }
+    .git-flow-box.committed { border-color: rgba(88,166,255,0.4);  background: rgba(88,166,255,0.05);  }
+    .git-flow-arrow { text-align: center; padding: 0 0.6rem; }
+    .git-flow-arrow .cmd  { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); display: block; white-space: nowrap; }
+    .git-flow-arrow .arr  { font-size: 1rem; color: var(--text-muted); display: block; }
+
+    /* ── Status badge pill ── */
+    .status-pill { display: inline-block; font-family: var(--mono); font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 20px; }
+    .status-pill.red    { background: rgba(247,129,102,0.15); color: var(--accent3); border: 1px solid rgba(247,129,102,0.3); }
+    .status-pill.green  { background: rgba(63,185,80,0.12);   color: var(--accent2); border: 1px solid rgba(63,185,80,0.3);  }
+    .status-pill.yellow { background: rgba(210,153,34,0.12);  color: #e3b341;        border: 1px solid rgba(210,153,34,0.3); }
+    .status-pill.blue   { background: rgba(88,166,255,0.12);  color: var(--accent);  border: 1px solid rgba(88,166,255,0.3); }
+
+    /* ── Two-col comparison ── */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .compare-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.2rem; }
+    .compare-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+    .compare-card p, .compare-card li { font-size: 0.83rem; color: var(--text-muted); line-height: 1.7; }
+    .compare-card ul { margin: 0.4rem 0 0 1.1rem; }
+
+    /* ── Collab role cards ── */
+    .collab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .collab-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+    .collab-card h4 { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
+    .collab-card p  { font-size: 0.82rem; color: var(--text-muted); }
+
+    @media (max-width: 640px) {
+      .git-flow { grid-template-columns: 1fr; }
+      .git-flow-arrow { padding: 0.3rem 0; }
+      .compare-grid, .collab-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Syntax colours ── */
+    .t-cmd  { color: #79c0ff; }
+    .t-flag { color: #ffa657; }
+    .t-str  { color: #a5d6ff; }
+    .t-com  { color: #8b949e; font-style: italic; }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 2rem 1.2rem 4rem; }
+      .hero h1 { font-size: 1.6rem; }
+      .ext-grid { grid-template-columns: 1fr; }
+      .cmd-grid { grid-template-columns: auto 1fr; }
+      .cmd-grid-header > div:last-child,
+      .cmd-row > div:last-child { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.137 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z" fill="#58a6ff"/></svg>
+      Git &amp; GitHub Guide
+    </div>
+    <nav>
+      <div class="sidebar-section-label">Setup</div>
+      <ul>
+        <li><a href="#step1"><span class="step-badge">1</span> Create a GitHub Account</a></li>
+        <li><a href="#step2"><span class="step-badge">2</span> Install Git</a></li>
+        <li><a href="#step3"><span class="step-badge">3</span> Configure Git &amp; SSH</a></li>
+        <li><a href="#step4"><span class="step-badge">4</span> VS Code Extensions</a></li>
+      </ul>
+      <div class="sidebar-section-label">Before You Code</div>
+      <ul>
+        <li><a href="#step5"><span class="step-badge">5</span> Terminal Commands</a></li>
+      </ul>
+      <div class="sidebar-section-label">Working with Repos</div>
+      <ul>
+        <li><a href="#step6"><span class="step-badge">6</span> Create a Repository</a></li>
+      </ul>
+      <div class="sidebar-section-label">Daily Workflow</div>
+      <ul>
+        <li><a href="#step7"><span class="step-badge">7</span> Understanding Changes</a></li>
+        <li><a href="#step8"><span class="step-badge">8</span> Stage, Commit &amp; Push</a></li>
+        <li><a href="#step9"><span class="step-badge">9</span> Undoing Changes</a></li>
+      </ul>
+      <div class="sidebar-section-label">Branching</div>
+      <ul>
+        <li><a href="#step10"><span class="step-badge">10</span> Main vs. Branch</a></li>
+        <li><a href="#step11"><span class="step-badge">11</span> Creating a Branch</a></li>
+        <li><a href="#step12"><span class="step-badge">12</span> Pull Requests &amp; Merging</a></li>
+      </ul>
+      <div class="sidebar-section-label">Teamwork</div>
+      <ul>
+        <li><a href="#step13"><span class="step-badge">13</span> Collaborating on GitHub</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────────────── -->
+  <main>
+
+    <!-- Hero -->
+    <div class="hero">
+      <span class="hero-label">Algorithmics · Student Guide</span>
+      <h1>Getting Started with<br>Git &amp; GitHub</h1>
+      <p>A step-by-step guide to setting up version control on your computer and connecting it to GitHub, so you can save, share, and collaborate on your code.</p>
+      <div class="prereq-box">
+        <span>✅</span>
+        <div><strong>Before you begin:</strong> Make sure you have <strong>Visual Studio Code</strong> installed. Download it at <a href="https://code.visualstudio.com" target="_blank">code.visualstudio.com</a>.</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 1 — Create a GitHub Account
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step1">
+      <div class="section-header">
+        <span class="section-number">Step 01</span>
+        <h2>Create a GitHub Account</h2>
+      </div>
+      <p>GitHub is the online platform where your code is stored and shared. You will need a free account before doing anything else.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body"><p>Go to <a href="https://github.com" target="_blank">github.com</a> and click <strong>Sign up</strong>.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body">
+            <p>Enter your <strong>email address</strong>, create a <strong>password</strong>, and choose a <strong>username</strong>.</p>
+            <div class="callout tip"><span class="callout-icon">💡</span><p><strong>Tip:</strong> Choose a username that looks professional — it will appear on all your projects. For example, <code class="inline">john-doe</code> is better than <code class="inline">j0hnd0e99</code>.</p></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot">3</div>
+          <div class="step-body"><p>Complete the short verification puzzle, then click <strong>Create account</strong>.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-dot">4</div>
+          <div class="step-body"><p>Check your email inbox for a <strong>verification code</strong> from GitHub, enter it on the page, and your account is ready.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 2 — Install Git
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step2">
+      <div class="section-header">
+        <span class="section-number">Step 02</span>
+        <h2>Download &amp; Install Git</h2>
+      </div>
+      <p>Git is the version control software that runs on your computer. You need to install it before VS Code can use it.</p>
+
+      <div class="tabs" id="os-tabs">
+        <button class="tab-btn active" data-target="tab-win" data-group="os-tabs">🪟 Windows</button>
+        <button class="tab-btn" data-target="tab-mac" data-group="os-tabs">🍎 macOS</button>
+      </div>
+
+      <div class="tab-pane active" id="tab-win">
+        <div class="steps">
+          <div class="step"><div class="step-dot">1</div><div class="step-body"><p>Go to <a href="https://git-scm.com/download/win" target="_blank">git-scm.com/download/win</a>. The download should start automatically.</p></div></div>
+          <div class="step">
+            <div class="step-dot">2</div>
+            <div class="step-body">
+              <p>Run the installer (<code class="inline">.exe</code> file). Click <strong>Next</strong> through all the steps — the default settings are fine.</p>
+              <div class="callout info"><span class="callout-icon">ℹ️</span><p>On the screen titled <strong>"Choosing the default editor"</strong>, select <strong>Visual Studio Code</strong> from the dropdown if it is available.</p></div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot">3</div>
+            <div class="step-body">
+              <p>Once installed, open a <strong>new terminal</strong> in VS Code (<code class="inline">Ctrl + `</code>) and run the following to confirm Git is installed:</p>
+              <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+                <pre><code><span class="t-cmd">git</span> <span class="t-flag">--version</span></code></pre>
+              </div>
+              <p>You should see something like <code class="inline">git version 2.x.x.windows.x</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tab-mac">
+        <div class="steps">
+          <div class="step">
+            <div class="step-dot">1</div>
+            <div class="step-body">
+              <p>Open the terminal in VS Code (<code class="inline">Ctrl + `</code>) and run:</p>
+              <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+                <pre><code><span class="t-cmd">git</span> <span class="t-flag">--version</span></code></pre>
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot">2</div>
+            <div class="step-body">
+              <p>If Git is not installed, macOS will prompt you to install the <strong>Xcode Command Line Tools</strong>. Click <strong>Install</strong> and wait for it to finish.</p>
+              <div class="callout tip"><span class="callout-icon">💡</span><p>Alternatively, if you have <a href="https://brew.sh" target="_blank">Homebrew</a> installed, you can run <code class="inline">brew install git</code>.</p></div>
+            </div>
+          </div>
+          <div class="step"><div class="step-dot">3</div><div class="step-body"><p>Run <code class="inline">git --version</code> again to confirm the installation was successful.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 3 — Configure Git & SSH
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step3">
+      <div class="section-header">
+        <span class="section-number">Step 03</span>
+        <h2>Configure Git &amp; Set Up SSH</h2>
+      </div>
+      <p>In this step you will tell Git who you are, and then set up a secure SSH connection so that your computer can communicate with GitHub without requiring a password each time.</p>
+
+      <!-- Part A: Identity -->
+      <div class="sub-section-label">
+        <span class="badge">Part A</span> Set Your Git Identity
+      </div>
+      <p>Git attaches your name and email to every change you save. This is how your contributions are recorded on GitHub.</p>
+      <div class="callout warn"><span class="callout-icon">⚠️</span><p><strong>Important:</strong> Use the <strong>same email address</strong> as your GitHub account, otherwise GitHub will not link your work to your profile.</p></div>
+
+      <p>Open the terminal in VS Code (<code class="inline">Ctrl + `</code>) and run these two commands. Replace the placeholder text with your actual details.</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+        <pre><code><span class="t-cmd">git</span> config <span class="t-flag">--global</span> user.name  <span class="t-str">"Your Name"</span>
+<span class="t-cmd">git</span> config <span class="t-flag">--global</span> user.email <span class="t-str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cab3a5bfb88aafa7aba3a6e4a9a5a7">[email&#160;protected]</a>"</span></code></pre>
+      </div>
+      <p>Verify that both values were saved correctly:</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+        <pre><code><span class="t-cmd">git</span> config <span class="t-flag">--list</span></code></pre>
+      </div>
+      <p>You should see <code class="inline">user.name</code> and <code class="inline">user.email</code> listed in the output.</p>
+
+      <!-- Part B: SSH -->
+      <div class="sub-section-label" style="margin-top:2.5rem;">
+        <span class="badge">Part B</span> Set Up SSH Authentication
+      </div>
+      <p>SSH is a secure method that lets your computer communicate with GitHub without entering your password every time you upload or download code. You will create a <strong>key pair</strong>: a private key that stays on your computer, and a public key that you give to GitHub.</p>
+
+      <div class="ssh-flow">
+        <div class="ssh-flow-item">
+          <span class="icon">💻</span>
+          <span class="lbl">Your Computer</span>
+          <span class="sublbl">holds the private key</span>
+        </div>
+        <div class="ssh-flow-mid">
+          <span class="icon">🔐</span>
+          <span class="lbl">SSH Tunnel</span>
+        </div>
+        <div class="ssh-flow-item">
+          <span class="icon">🐙</span>
+          <span class="lbl">GitHub</span>
+          <span class="sublbl">holds your public key</span>
+        </div>
+      </div>
+      <div class="callout info"><span class="callout-icon">ℹ️</span><p>Think of it like a padlock and key. You give GitHub the padlock (public key) — only your key (private key) can open it. You never share the private key with anyone.</p></div>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body">
+            <p><strong>Generate your SSH key pair.</strong> Run this command in your VS Code terminal:</p>
+            <div class="code-block">
+              <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+              <pre><code><span class="t-cmd">ssh-keygen</span> <span class="t-flag">-t</span> ed25519 <span class="t-flag">-C</span> <span class="t-str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c8b1a7bdba88ada5a9a1a4e6aba7a5">[email&#160;protected]</a>"</span></code></pre>
+            </div>
+            <p>Replace <code class="inline"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a53455f586a4f474b434604494547">[email&#160;protected]</a></code> with your GitHub email. The terminal will ask you three questions — press <kbd>Enter</kbd> each time to accept the default answers.</p>
+            <div class="callout tip"><span class="callout-icon">💡</span><p>After running this, two files are created in a hidden folder on your computer called <code class="inline">.ssh</code>: your <strong>private key</strong> (<code class="inline">id_ed25519</code>) and your <strong>public key</strong> (<code class="inline">id_ed25519.pub</code>). The <code class="inline">.pub</code> file is the one you will share with GitHub.</p></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body">
+            <p><strong>Copy your public key to the clipboard.</strong></p>
+            <div class="tabs" id="ssh-os-tabs" style="margin-bottom:0.8rem;">
+              <button class="tab-btn active" style="font-size:0.76rem;padding:0.45rem 1rem;" data-target="ssh-tab-win" data-group="ssh-os-tabs">🪟 Windows</button>
+              <button class="tab-btn" style="font-size:0.76rem;padding:0.45rem 1rem;" data-target="ssh-tab-mac" data-group="ssh-os-tabs">🍎 macOS</button>
+            </div>
+            <div class="tab-pane active" id="ssh-tab-win">
+              <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+                <pre><code><span class="t-cmd">cat</span> ~/.ssh/id_ed25519.pub | <span class="t-cmd">clip</span></code></pre>
+              </div>
+              <p>This copies your public key to the clipboard automatically.</p>
+            </div>
+            <div class="tab-pane" id="ssh-tab-mac">
+              <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+                <pre><code><span class="t-cmd">pbcopy</span> &lt; ~/.ssh/id_ed25519.pub</code></pre>
+              </div>
+              <p>This copies your public key to the clipboard automatically.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-dot">3</div>
+          <div class="step-body">
+            <p><strong>Add your public key to GitHub.</strong></p>
+            <ol style="margin:0.4rem 0 0.4rem 1.2rem;color:var(--text-muted);font-size:0.88rem;line-height:2.2;">
+              <li>Go to <a href="https://github.com/settings/keys" target="_blank">github.com/settings/keys</a>.</li>
+              <li>Click <strong>New SSH key</strong>.</li>
+              <li>In the <strong>Title</strong> field, type a name for this computer (e.g., <code class="inline">My Laptop</code>).</li>
+              <li>In the <strong>Key</strong> field, paste what you copied in the previous step (<kbd>Ctrl + V</kbd>).</li>
+              <li>Click <strong>Add SSH key</strong>.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-dot">4</div>
+          <div class="step-body">
+            <p><strong>Test the connection.</strong> Run this in your terminal:</p>
+            <div class="code-block">
+              <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+              <pre><code><span class="t-cmd">ssh</span> <span class="t-flag">-T</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="187f716c587f716c706d7a367b7775">[email&#160;protected]</a></code></pre>
+            </div>
+            <p>If everything is set up correctly, you will see:</p>
+            <div class="code-block no-copy">
+              <div class="code-block-header"><span class="code-lang">output</span></div>
+              <pre><code>Hi your-username! You've successfully authenticated, but GitHub does not provide shell access.</code></pre>
+            </div>
+            <div class="callout info"><span class="callout-icon">ℹ️</span><p>If asked <em>"Are you sure you want to continue connecting (yes/no)?"</em>, type <code class="inline">yes</code> and press <kbd>Enter</kbd>. This message appears only the very first time.</p></div>
+          </div>
+        </div>
+
+      </div><!-- /steps -->
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 4 — VS Code Extensions
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step4">
+      <div class="section-header">
+        <span class="section-number">Step 04</span>
+        <h2>Install VS Code Extensions for Git</h2>
+      </div>
+      <p>VS Code has basic Git support built in, but the following extensions make it significantly easier to work with GitHub. Think of extensions as add-ons that give VS Code extra abilities.</p>
+
+      <div class="ext-grid">
+        <div class="ext-card">
+          <div class="ext-card-header">
+            <div class="ext-icon" style="background:rgba(88,166,255,0.1);">🐙</div>
+            <div><div class="ext-name">GitHub Pull Requests</div><div class="ext-author">by GitHub</div></div>
+          </div>
+          <div class="ext-desc">Connects VS Code directly to your GitHub account so you can publish repositories, review pull requests, and manage issues without leaving the editor.</div>
+          <span class="ext-badge required">Required</span>
+        </div>
+        <div class="ext-card">
+          <div class="ext-card-header">
+            <div class="ext-icon" style="background:rgba(210,168,255,0.1);">🔍</div>
+            <div><div class="ext-name">GitLens</div><div class="ext-author">by GitKraken</div></div>
+          </div>
+          <div class="ext-desc">Shows who changed each line of code and when, displays a full history of your project, and lets you compare different versions of a file side by side.</div>
+          <span class="ext-badge optional">Recommended</span>
+        </div>
+      </div>
+
+      <h3>How to Install an Extension</h3>
+      <div class="steps">
+        <div class="step"><div class="step-dot">1</div><div class="step-body"><p>Open the <strong>Extensions panel</strong> by clicking the four-square icon in the left sidebar, or press <code class="inline">Ctrl + Shift + X</code>.</p></div></div>
+        <div class="step"><div class="step-dot">2</div><div class="step-body"><p>In the search bar at the top, type the name of the extension (e.g., <code class="inline">GitHub Pull Requests</code>).</p></div></div>
+        <div class="step">
+          <div class="step-dot">3</div>
+          <div class="step-body">
+            <p>Click the result that shows the correct publisher name (e.g., <strong>GitHub</strong>), then click the blue <strong>Install</strong> button.</p>
+            <div class="callout warn"><span class="callout-icon">⚠️</span><p><strong>Check the publisher name!</strong> There may be several extensions with similar names. Always verify the author matches the one listed above.</p></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot">4</div>
+          <div class="step-body">
+            <p>VS Code may show a prompt to <strong>Sign in to GitHub</strong>. Click <strong>Allow</strong> — a browser window will open. Sign in with your GitHub credentials and click <strong>Authorise Visual-Studio-Code</strong>, then switch back to VS Code.</p>
+            <div class="callout tip"><span class="callout-icon">💡</span><p>You only need to sign in once. VS Code will remember your GitHub account on this computer for all future sessions.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 5 — Terminal Commands
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step5">
+      <div class="section-header">
+        <span class="section-number">Step 05</span>
+        <h2>Essential Terminal Commands</h2>
+      </div>
+      <p>The terminal (also called the command line) lets you control your computer by typing commands. Before you start working with Git, it helps to know a few basic commands for moving between folders and checking where you are.</p>
+      <div class="callout info"><span class="callout-icon">ℹ️</span><p>To open the terminal in VS Code, press <kbd>Ctrl + `</kbd> (the backtick key, just below <kbd>Esc</kbd>). You can also go to <strong>Terminal → New Terminal</strong> from the menu bar.</p></div>
+
+      <h3>Navigating Folders</h3>
+      <p>When you open a terminal, you always start in a specific location on your computer — like standing inside a particular folder. These commands help you move around.</p>
+
+      <div class="cmd-grid">
+        <div class="cmd-grid-header">
+          <div>Command</div>
+          <div>What it does</div>
+          <div>Example</div>
+        </div>
+
+        <div class="cmd-row">
+          <div>pwd</div>
+          <div><strong style="color:var(--text);">P</strong>rint <strong style="color:var(--text);">W</strong>orking <strong style="color:var(--text);">D</strong>irectory — shows you the full path of the folder you are currently in. Use this when you are unsure where you are.</div>
+          <div><code class="inline">pwd</code></div>
+        </div>
+
+        <div class="cmd-row">
+          <div>ls <span class="os-pill">macOS</span><br>dir <span class="os-pill">Windows</span></div>
+          <div><strong style="color:var(--text);">L</strong>i<strong style="color:var(--text);">s</strong>t — shows all files and folders inside your current location. Think of it as opening a folder and seeing its contents.</div>
+          <div><code class="inline">ls</code></div>
+        </div>
+
+        <div class="cmd-row">
+          <div>cd</div>
+          <div><strong style="color:var(--text);">C</strong>hange <strong style="color:var(--text);">D</strong>irectory — moves you into a folder. It is the same as double-clicking a folder to open it.</div>
+          <div><code class="inline">cd Desktop</code></div>
+        </div>
+
+        <div class="cmd-row">
+          <div>cd&nbsp;..</div>
+          <div>Moves you <em>one level up</em> to the parent folder. The two dots (<code class="inline">..</code>) always mean "go up one folder".</div>
+          <div><code class="inline">cd ..</code></div>
+        </div>
+
+        <div class="cmd-row">
+          <div>mkdir</div>
+          <div><strong style="color:var(--text);">M</strong>a<strong style="color:var(--text);">k</strong>e <strong style="color:var(--text);">Dir</strong>ectory — creates a new, empty folder at your current location.</div>
+          <div><code class="inline">mkdir Projects</code></div>
+        </div>
+
+        <div class="cmd-row">
+          <div>clear</div>
+          <div>Clears all the previous output from the terminal screen. The commands still work — the screen is just tidied up.</div>
+          <div><code class="inline">clear</code></div>
+        </div>
+      </div>
+
+      <h3>Navigating to a Folder — Worked Example</h3>
+      <p>Suppose you want to save a project inside a folder called <code class="inline">Projects</code> on your Desktop. Here is how you would get there:</p>
+
+      <div class="tabs" id="nav-os-tabs">
+        <button class="tab-btn active" data-target="nav-tab-win" data-group="nav-os-tabs">🪟 Windows</button>
+        <button class="tab-btn" data-target="nav-tab-mac" data-group="nav-os-tabs">🍎 macOS</button>
+      </div>
+
+      <div class="tab-pane active" id="nav-tab-win">
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+          <pre><code><span class="t-com"># Step 1: Check where you currently are</span>
+<span class="t-cmd">pwd</span>
+
+<span class="t-com"># Step 2: Move to the Desktop</span>
+<span class="t-cmd">cd</span> C:\Users\YourName\Desktop
+
+<span class="t-com"># Step 3: See what folders exist on the Desktop</span>
+<span class="t-cmd">dir</span>
+
+<span class="t-com"># Step 4: Move into your Projects folder</span>
+<span class="t-cmd">cd</span> Projects</code></pre>
+        </div>
+      </div>
+      <div class="tab-pane" id="nav-tab-mac">
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+          <pre><code><span class="t-com"># Step 1: Check where you currently are</span>
+<span class="t-cmd">pwd</span>
+
+<span class="t-com"># Step 2: Move to the Desktop</span>
+<span class="t-com"># The tilde (~) is a shortcut that means "my home folder"</span>
+<span class="t-cmd">cd</span> ~/Desktop
+
+<span class="t-com"># Step 3: See what folders exist on the Desktop</span>
+<span class="t-cmd">ls</span>
+
+<span class="t-com"># Step 4: Move into your Projects folder</span>
+<span class="t-cmd">cd</span> Projects</code></pre>
+        </div>
+      </div>
+
+      <div class="callout purple" style="margin-top:0.5rem;">
+        <span class="callout-icon">💡</span>
+        <div>
+          <p><strong>Handy shortcuts to know:</strong></p>
+          <p>Press <kbd>Tab</kbd> to auto-complete a folder name — start typing and press Tab to fill in the rest.</p>
+          <p>Press <kbd>↑</kbd> to go back to the last command you typed, so you do not have to retype it.</p>
+        </div>
+      </div>
+
+      <h3>Opening a Folder in VS Code from the Terminal</h3>
+      <p>Once you have navigated to a folder, you can open it directly in VS Code with a single command:</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+        <pre><code><span class="t-com"># The dot ( . ) means "the folder I am currently in"</span>
+<span class="t-cmd">code</span> .</code></pre>
+      </div>
+      <div class="callout tip"><span class="callout-icon">💡</span><p>If <code class="inline">code .</code> does not work on macOS, open VS Code, press <kbd>Ctrl + Shift + P</kbd>, type <code class="inline">shell command</code>, and select <strong>Install 'code' command in PATH</strong>. Then try again.</p></div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 6 — Create a Repository
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step6">
+      <div class="section-header">
+        <span class="section-number">Step 06</span>
+        <h2>Create a Repository</h2>
+      </div>
+      <p>A <strong>repository</strong> (or "repo") is a folder where Git tracks all changes to your project. There are two ways to create one.</p>
+
+      <div class="tabs" id="repo-tabs">
+        <button class="tab-btn active" data-target="repo-tab-browser" data-group="repo-tabs">🌐 Method A · GitHub Website</button>
+        <button class="tab-btn" data-target="repo-tab-vscode" data-group="repo-tabs">💻 Method B · VS Code</button>
+      </div>
+
+      <!-- METHOD A -->
+      <div class="tab-pane active" id="repo-tab-browser">
+        <p>Use this method when you want to start a project on GitHub first, then download it to your computer.</p>
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-dot">1</div>
+            <div class="step-body">
+              <p>Log in to <a href="https://github.com" target="_blank">github.com</a>. Click the <strong>＋</strong> icon in the top-right corner, then select <strong>New repository</strong>.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-dot">2</div>
+            <div class="step-body">
+              <p>Fill in the repository details:</p>
+              <ul style="margin:0.5rem 0 0.5rem 1.2rem;color:var(--text-muted);font-size:0.88rem;line-height:2.2;">
+                <li><strong>Repository name</strong> — use lowercase letters and hyphens (e.g., <code class="inline">my-first-project</code>). Avoid spaces.</li>
+                <li><strong>Description</strong> — a short sentence describing the project (optional but recommended).</li>
+                <li><strong>Visibility</strong> — choose <strong>Public</strong> so others can see it, or <strong>Private</strong> to keep it to yourself.</li>
+              </ul>
+              <p>Tick <strong>Add a README file</strong>, then click <strong>Create repository</strong>. Your repository is now live on GitHub.</p>
+              <div class="callout info"><span class="callout-icon">ℹ️</span><p>A <code class="inline">README.md</code> file is the front page of your repository. It is a good place to describe what your project does.</p></div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-dot">3</div>
+            <div class="step-body">
+              <p><strong>Create a folder on your computer and open it in VS Code.</strong></p>
+              <p>Before downloading your repository, first decide where you want to keep your projects. For example, you might create a folder called <code class="inline">Projects</code> on your Desktop using File Explorer (Windows) or Finder (macOS).</p>
+              <p>Once the folder exists, open it in VS Code:</p>
+              <ol style="margin:0.4rem 0 0.6rem 1.2rem;color:var(--text-muted);font-size:0.88rem;line-height:2.2;">
+                <li>In VS Code, go to <strong>File → Open Folder…</strong></li>
+                <li>Navigate to and select the folder you just created.</li>
+                <li>Click <strong>Open</strong>.</li>
+              </ol>
+              <div class="callout tip">
+                <span class="callout-icon">💡</span>
+                <p><strong>Why open the folder first?</strong> When you open a folder in VS Code and then launch the terminal (<kbd>Ctrl + `</kbd>), the terminal automatically starts <em>inside</em> that folder. This means you do not need to type any <code class="inline">cd</code> commands — VS Code handles the location for you.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-dot">4</div>
+            <div class="step-body">
+              <p><strong>Copy the SSH URL from GitHub.</strong></p>
+              <p>Go back to your repository page on GitHub. Click the green <strong>Code</strong> button, select the <strong>SSH</strong> tab, and copy the URL. It will look like this:</p>
+              <div class="code-block no-copy">
+                <div class="code-block-header"><span class="code-lang">example</span></div>
+                <pre><code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99fef0edd9fef0edf1ecfbb7faf6f4">[email&#160;protected]</a>:your-username/your-repo-name.git</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-dot">5</div>
+            <div class="step-body">
+              <p><strong>Open the terminal and clone the repository.</strong></p>
+              <p>In VS Code, press <kbd>Ctrl + `</kbd> to open the terminal. Because you opened the <code class="inline">Projects</code> folder in the previous step, the terminal is already pointing to that location.</p>
+              <p>Run the following command, replacing the URL with the one you copied:</p>
+              <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+                <pre><code><span class="t-cmd">git</span> clone <span class="t-str"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1b6b8a591b6b8a5b9a4b3ffb2bebc">[email&#160;protected]</a>:your-username/your-repo-name.git</span></code></pre>
+              </div>
+              <p>Git will download all the files from GitHub and create a new subfolder with your repository name inside your <code class="inline">Projects</code> folder.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-dot">6</div>
+            <div class="step-body">
+              <p><strong>Open the downloaded repository in VS Code.</strong></p>
+              <p>After cloning, go to <strong>File → Open Folder…</strong>, navigate into the new folder that Git created (e.g., <code class="inline">my-first-project</code>), and click <strong>Open</strong>.</p>
+              <p>VS Code will reload with your repository open. You are now ready to start coding!</p>
+              <div class="callout tip">
+                <span class="callout-icon">💡</span>
+                <p>You can confirm you are in the right place by looking at the folder name shown in the <strong>Explorer</strong> panel on the left — it should match your repository name.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /Method A -->
+
+      <!-- METHOD B -->
+      <div class="tab-pane" id="repo-tab-vscode">
+        <p>Use this method when you already have a project folder on your computer and want to publish it to GitHub.</p>
+        <div class="steps">
+          <div class="step"><div class="step-dot">1</div><div class="step-body"><p>Open your project folder in VS Code: go to <strong>File → Open Folder…</strong> and select your project.</p></div></div>
+          <div class="step"><div class="step-dot">2</div><div class="step-body"><p>Click the <strong>Source Control</strong> icon in the left sidebar (it looks like a branching tree), or press <code class="inline">Ctrl + Shift + G</code>.</p></div></div>
+          <div class="step"><div class="step-dot">3</div><div class="step-body"><p>Click <strong>Initialise Repository</strong>. This turns your folder into a Git repository.</p></div></div>
+          <div class="step">
+            <div class="step-dot">4</div>
+            <div class="step-body">
+              <p>All your files will appear under <strong>Changes</strong>. Type a short message in the text box at the top (e.g., <code class="inline">Initial commit</code>) and click the <strong>✓ Commit</strong> button.</p>
+              <div class="callout info"><span class="callout-icon">ℹ️</span><p>A <strong>commit</strong> is a saved snapshot of your project at a specific point in time. Always write a clear, descriptive message so you can identify it later.</p></div>
+            </div>
+          </div>
+          <div class="step"><div class="step-dot">5</div><div class="step-body"><p>Click <strong>Publish Branch</strong>. VS Code will ask whether to publish it as <strong>Public</strong> or <strong>Private</strong> on GitHub — choose your preference.</p></div></div>
+          <div class="step">
+            <div class="step-dot">6</div>
+            <div class="step-body">
+              <p>If you have not already signed in to GitHub from VS Code, a browser window will open asking you to authorise the connection. Sign in and click <strong>Authorise Visual-Studio-Code</strong>, then switch back to VS Code. Your repository will then appear on GitHub automatically.</p>
+              <div class="callout tip"><span class="callout-icon">💡</span><p>You can click the link that appears in VS Code's bottom status bar to open your new repository in the browser straight away.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Everyday Git Commands</h3>
+        <p>Once your repository is set up, these are the three commands you will use most often:</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+          <pre><code><span class="t-com"># Stage all your changed files, ready to be saved</span>
+<span class="t-cmd">git</span> add .
+
+<span class="t-com"># Save a snapshot of your project with a descriptive message</span>
+<span class="t-cmd">git</span> commit <span class="t-flag">-m</span> <span class="t-str">"Describe what you changed"</span>
+
+<span class="t-com"># Upload your latest commits to GitHub</span>
+<span class="t-cmd">git</span> push</code></pre>
+        </div>
+      </div><!-- /Method B -->
+
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 7 — Understanding Changes
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step7">
+      <div class="section-header">
+        <span class="section-number">Step 07</span>
+        <h2>Understanding Changes</h2>
+      </div>
+      <p>Before saving your work, it helps to understand how Git thinks about the files in your project. Git puts every file into one of three states at any given time.</p>
+
+      <div class="git-flow">
+        <div class="git-flow-box untracked">
+          <span class="icon">📄</span>
+          <span class="label">Working Directory</span>
+          <span class="sublabel">Files you are editing</span>
+        </div>
+        <div class="git-flow-arrow">
+          <span class="cmd">git add</span>
+          <span class="arr">→</span>
+        </div>
+        <div class="git-flow-box staged">
+          <span class="icon">📋</span>
+          <span class="label">Staging Area</span>
+          <span class="sublabel">Files ready to save</span>
+        </div>
+        <div class="git-flow-arrow">
+          <span class="cmd">git commit</span>
+          <span class="arr">→</span>
+        </div>
+        <div class="git-flow-box committed">
+          <span class="icon">🗃️</span>
+          <span class="label">Repository</span>
+          <span class="sublabel">Saved snapshots</span>
+        </div>
+      </div>
+
+      <h3>The Three States Explained</h3>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot" style="background:rgba(247,129,102,0.1);border-color:rgba(247,129,102,0.4);color:var(--accent3);">U</div>
+          <div class="step-body">
+            <p><strong>Untracked</strong> <span class="status-pill red">U</span> — A brand-new file that Git has not seen before. Git knows the file exists, but it is not watching it yet. In VS Code's Source Control panel, these files show a <span class="status-pill red">U</span> badge next to them.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot" style="background:rgba(227,179,65,0.1);border-color:rgba(227,179,65,0.4);color:#e3b341;">M</div>
+          <div class="step-body">
+            <p><strong>Modified (tracked)</strong> <span class="status-pill yellow">M</span> — A file that Git was already watching, but you have made changes to it since the last commit. Git has noticed the difference. These appear with an <span class="status-pill yellow">M</span> badge in VS Code.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot" style="background:rgba(63,185,80,0.1);border-color:rgba(63,185,80,0.4);color:var(--accent2);">S</div>
+          <div class="step-body">
+            <p><strong>Staged</strong> <span class="status-pill green">A</span> — A file you have told Git to include in the next commit. Think of staging as placing items into a box before sealing and labelling it. Only staged files get included in your next commit.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout tip" style="margin-top:1.2rem;">
+        <span class="callout-icon">💡</span>
+        <p><strong>You do not have to stage every file at once.</strong> If you changed five files but only want to save three of them in this commit, you can stage only those three. The other two will remain in your working directory for the next commit.</p>
+      </div>
+
+      <h3>Checking the Status of Your Files</h3>
+      <p>At any time, you can run this command in the terminal to see which files are untracked, modified, or staged:</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+        <pre><code><span class="t-cmd">git</span> status</code></pre>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 8 — Stage, Commit & Push
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step8">
+      <div class="section-header">
+        <span class="section-number">Step 08</span>
+        <h2>Stage, Commit &amp; Push</h2>
+      </div>
+      <p>Once you have made changes to your project, there are three actions you will perform regularly: <strong>stage</strong> your files, <strong>commit</strong> them with a message, and <strong>push</strong> them to GitHub. You can do all of this either through VS Code's Source Control panel or the terminal.</p>
+
+      <div class="tabs" id="scp-tabs">
+        <button class="tab-btn active" data-target="scp-tab-vscode" data-group="scp-tabs">💻 VS Code Panel</button>
+        <button class="tab-btn" data-target="scp-tab-terminal" data-group="scp-tabs">⌨️ Terminal</button>
+      </div>
+
+      <!-- VS Code Panel -->
+      <div class="tab-pane active" id="scp-tab-vscode">
+        <div class="steps">
+          <div class="step">
+            <div class="step-dot">1</div>
+            <div class="step-body">
+              <p><strong>Open the Source Control panel.</strong> Click the branching-tree icon in the left sidebar, or press <code class="inline">Ctrl + Shift + G</code>. You will see all changed files listed under <strong>Changes</strong>.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot">2</div>
+            <div class="step-body">
+              <p><strong>Stage your files.</strong> Hover over a file name and click the <strong>+</strong> icon that appears to stage that individual file. To stage all changed files at once, hover over the <strong>Changes</strong> heading and click the <strong>+</strong> icon there instead. Staged files move to a section labelled <strong>Staged Changes</strong>.</p>
+              <div class="callout tip"><span class="callout-icon">💡</span><p>You can also right-click a file and choose <strong>Stage Changes</strong> from the menu.</p></div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot">3</div>
+            <div class="step-body">
+              <p><strong>Write a commit message.</strong> Click the text box at the top of the panel that says <em>Message</em> and type a short, clear description of what you changed — for example, <code class="inline">Add player movement function</code>.</p>
+              <div class="callout info"><span class="callout-icon">ℹ️</span><p>A good commit message answers: <em>"What does this change do?"</em> Use the present tense. For example, <code class="inline">Fix login bug</code> rather than <code class="inline">Fixed login bug</code>.</p></div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot">4</div>
+            <div class="step-body">
+              <p><strong>Commit.</strong> Click the <strong>✓ Commit</strong> button. Your changes are now saved as a snapshot in your local repository.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot">5</div>
+            <div class="step-body">
+              <p><strong>Push to GitHub.</strong> After committing, VS Code will show a <strong>Sync Changes</strong> button (or a <strong>Push</strong> option in the <code class="inline">…</code> menu). Click it to upload your commit to GitHub.</p>
+              <div class="callout tip"><span class="callout-icon">💡</span><p>You can also click the small cloud/sync icon in VS Code's bottom status bar to push.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terminal -->
+      <div class="tab-pane" id="scp-tab-terminal">
+        <p>Run these three commands in order each time you want to save and upload your work.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+          <pre><code><span class="t-com"># 1. Stage all changed files</span>
+<span class="t-cmd">git</span> add .
+
+<span class="t-com"># 1b. To stage a specific file only:</span>
+<span class="t-cmd">git</span> add <span class="t-str">filename.py</span>
+
+<span class="t-com"># 2. Commit with a message</span>
+<span class="t-cmd">git</span> commit <span class="t-flag">-m</span> <span class="t-str">"Add player movement function"</span>
+
+<span class="t-com"># 3. Push to GitHub</span>
+<span class="t-cmd">git</span> push</code></pre>
+        </div>
+
+        <h3>Pulling Changes from GitHub</h3>
+        <p>If you are working on multiple computers, or collaborating with others, you should always <strong>pull</strong> the latest changes from GitHub before you start working. This downloads any new commits that are on GitHub but not yet on your computer.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+          <pre><code><span class="t-cmd">git</span> pull</code></pre>
+        </div>
+        <div class="callout warn"><span class="callout-icon">⚠️</span><p><strong>Always pull before you push.</strong> If someone else has pushed changes since you last pulled, your push may be rejected. Run <code class="inline">git pull</code> first, resolve any conflicts, then push.</p></div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 9 — Undoing Changes
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step9">
+      <div class="section-header">
+        <span class="section-number">Step 09</span>
+        <h2>Undoing Changes</h2>
+      </div>
+      <p>One of the most useful things about Git is that you can always go back. There are three different situations you might find yourself in, each with a different solution.</p>
+
+      <!-- Situation 1 -->
+      <div class="sub-section-label">
+        <span class="badge">Situation A</span> Discard Unsaved Edits (not yet committed)
+      </div>
+      <p>You have made changes to a file but have not committed them yet, and you want to throw those changes away and restore the file to how it was in the last commit.</p>
+
+      <div class="tabs" id="undo-a-tabs">
+        <button class="tab-btn active" data-target="undo-a-vscode" data-group="undo-a-tabs">💻 VS Code Panel</button>
+        <button class="tab-btn" data-target="undo-a-terminal" data-group="undo-a-tabs">⌨️ Terminal</button>
+      </div>
+      <div class="tab-pane active" id="undo-a-vscode">
+        <p>In the <strong>Source Control panel</strong>, right-click the file you want to restore and select <strong>Discard Changes</strong>. The file will revert immediately to its last committed state.</p>
+        <div class="callout warn"><span class="callout-icon">⚠️</span><p>This action is permanent — discarded changes cannot be recovered. Make sure you no longer need them before proceeding.</p></div>
+      </div>
+      <div class="tab-pane" id="undo-a-terminal">
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+          <pre><code><span class="t-com"># Discard changes in a specific file</span>
+<span class="t-cmd">git</span> restore <span class="t-str">filename.py</span>
+
+<span class="t-com"># Discard ALL uncommitted changes in the entire project</span>
+<span class="t-cmd">git</span> restore .</code></pre>
+        </div>
+      </div>
+
+      <!-- Situation 2 -->
+      <div class="sub-section-label" style="margin-top:2rem;">
+        <span class="badge">Situation B</span> Undo the Last Commit (not yet pushed)
+      </div>
+      <p>You have committed your changes but have not pushed them to GitHub yet, and you want to undo that commit. Your file edits are kept — only the commit is undone.</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+        <pre><code><span class="t-com"># Undo the last commit; your changes remain in the working directory</span>
+<span class="t-cmd">git</span> reset <span class="t-flag">--soft</span> HEAD~1</code></pre>
+      </div>
+      <div class="callout info"><span class="callout-icon">ℹ️</span><p><code class="inline">HEAD~1</code> means "one commit before where I am now". Your files stay exactly as they are — only the commit wrapper is removed. You can edit further and recommit.</p></div>
+
+      <!-- Situation 3 -->
+      <div class="sub-section-label" style="margin-top:2rem;">
+        <span class="badge">Situation C</span> Revert a Commit That Is Already on GitHub
+      </div>
+      <p>You have already pushed a commit to GitHub and want to undo it. Because others may have already pulled your changes, you should <strong>not</strong> rewrite history — instead, use <code class="inline">git revert</code>, which creates a new commit that undoes the previous one safely.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body">
+            <p>First, find the ID (hash) of the commit you want to undo:</p>
+            <div class="code-block">
+              <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+              <pre><code><span class="t-cmd">git</span> log <span class="t-flag">--oneline</span></code></pre>
+            </div>
+            <p>You will see a list of recent commits, each with a short ID (e.g., <code class="inline">a3f9c12</code>) and its message. Copy the ID of the commit you want to undo.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body">
+            <p>Run the revert command with that ID:</p>
+            <div class="code-block">
+              <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+              <pre><code><span class="t-cmd">git</span> revert <span class="t-str">a3f9c12</span></code></pre>
+            </div>
+            <p>Git will create a new commit that cancels out the changes from that commit. Push this new commit to GitHub as usual.</p>
+          </div>
+        </div>
+      </div>
+      <div class="callout tip"><span class="callout-icon">💡</span><p>In VS Code, you can also view the commit history using the <strong>GitLens</strong> extension: open the Source Control panel, click <strong>GitLens</strong> in the sidebar, and browse the timeline to find the commit you need.</p></div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 10 — Main vs. Branch
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step10">
+      <div class="section-header">
+        <span class="section-number">Step 10</span>
+        <h2>Main vs. Branch</h2>
+      </div>
+      <p>When you create a repository, Git creates a default timeline for your project called <strong>main</strong>. Every commit you make goes onto this timeline in order. Branches let you create a parallel copy of that timeline so you can experiment or add features without affecting the main version.</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>🌿 <code style="font-size:0.85rem;">main</code> branch</h4>
+          <ul>
+            <li>The primary, stable version of your project</li>
+            <li>Should always contain working, tested code</li>
+            <li>What users or teammates see when they look at your repo</li>
+            <li>You should not commit experimental or broken code directly to main</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <h4>🔀 Feature branch</h4>
+          <ul>
+            <li>A separate copy of the project created for a specific task</li>
+            <li>Safe to experiment — changes do not affect main</li>
+            <li>Once the work is complete and tested, it is merged back into main</li>
+            <li>Can be deleted after merging</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>A Visual Example</h3>
+      <p>Imagine you are building a game. Your <code class="inline">main</code> branch has the working game. You create a branch called <code class="inline">add-scoreboard</code> to build a new feature. While you work on it, main stays untouched. When the scoreboard is ready, you merge it in.</p>
+
+      <div class="branch-diagram">
+        <svg viewBox="0 0 560 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:560px;">
+          <!-- main line -->
+          <line x1="20" y1="40" x2="540" y2="40" stroke="#30363d" stroke-width="2"/>
+          <!-- branch line -->
+          <line x1="160" y1="40" x2="220" y2="90" stroke="#58a6ff" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <line x1="220" y1="90" x2="400" y2="90" stroke="#58a6ff" stroke-width="2"/>
+          <line x1="400" y1="90" x2="460" y2="40" stroke="#58a6ff" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <!-- main commits -->
+          <circle cx="60"  cy="40" r="7" fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+          <circle cx="160" cy="40" r="7" fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+          <circle cx="460" cy="40" r="9" fill="#58a6ff" stroke="#0d1117" stroke-width="2"/>
+          <circle cx="540" cy="40" r="7" fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+          <!-- branch commits -->
+          <circle cx="280" cy="90" r="7" fill="#58a6ff" stroke="#0d1117" stroke-width="2"/>
+          <circle cx="360" cy="90" r="7" fill="#58a6ff" stroke="#0d1117" stroke-width="2"/>
+          <!-- labels -->
+          <text x="60"  y="22" text-anchor="middle" fill="#8b949e" font-size="10" font-family="monospace">C1</text>
+          <text x="160" y="22" text-anchor="middle" fill="#8b949e" font-size="10" font-family="monospace">C2</text>
+          <text x="460" y="22" text-anchor="middle" fill="#58a6ff" font-size="10" font-family="monospace">Merge</text>
+          <text x="540" y="22" text-anchor="middle" fill="#8b949e" font-size="10" font-family="monospace">C5</text>
+          <text x="280" y="115" text-anchor="middle" fill="#8b949e" font-size="10" font-family="monospace">C3</text>
+          <text x="360" y="115" text-anchor="middle" fill="#8b949e" font-size="10" font-family="monospace">C4</text>
+          <!-- branch label -->
+          <rect x="148" y="102" width="176" height="20" rx="4" fill="#161b22" stroke="#58a6ff" stroke-width="1"/>
+          <text x="236" y="116" text-anchor="middle" fill="#58a6ff" font-size="10" font-family="monospace">add-scoreboard</text>
+          <!-- main label -->
+          <rect x="4" y="28" width="40" height="18" rx="4" fill="#161b22" stroke="#3fb950" stroke-width="1"/>
+          <text x="24" y="41" text-anchor="middle" fill="#3fb950" font-size="10" font-family="monospace">main</text>
+        </svg>
+      </div>
+
+      <div class="callout info"><span class="callout-icon">ℹ️</span><p>You can have as many branches as you like at the same time. A common approach is to create one branch per feature or bug fix, then merge it when it is done.</p></div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 11 — Creating a Branch
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step11">
+      <div class="section-header">
+        <span class="section-number">Step 11</span>
+        <h2>Creating a Branch</h2>
+      </div>
+      <p>You can create and switch between branches either from VS Code or the terminal. When you create a branch, Git takes a copy of the current state of your project and gives that copy a new name.</p>
+
+      <div class="tabs" id="branch-tabs">
+        <button class="tab-btn active" data-target="branch-tab-vscode" data-group="branch-tabs">💻 VS Code Panel</button>
+        <button class="tab-btn" data-target="branch-tab-terminal" data-group="branch-tabs">⌨️ Terminal</button>
+      </div>
+
+      <div class="tab-pane active" id="branch-tab-vscode">
+        <div class="steps">
+          <div class="step">
+            <div class="step-dot">1</div>
+            <div class="step-body"><p>Look at the <strong>bottom-left corner</strong> of VS Code. You will see the current branch name (e.g., <span class="status-pill blue">⎇ main</span>). Click on it.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-dot">2</div>
+            <div class="step-body"><p>A dropdown menu will appear at the top. Select <strong>Create new branch…</strong></p></div>
+          </div>
+          <div class="step">
+            <div class="step-dot">3</div>
+            <div class="step-body">
+              <p>Type a name for your new branch and press <kbd>Enter</kbd>. Use lowercase letters and hyphens to describe the task (e.g., <code class="inline">add-scoreboard</code>).</p>
+              <div class="callout tip"><span class="callout-icon">💡</span><p>VS Code will switch to the new branch immediately. You can confirm this by checking the branch name shown in the bottom-left corner — it should now show your new branch name.</p></div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot">4</div>
+            <div class="step-body">
+              <p>Make your changes, then stage and commit them as you learnt in Step 8. When you push for the first time on a new branch, VS Code will ask you to <strong>Publish Branch</strong> — click it to create this branch on GitHub as well.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="branch-tab-terminal">
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+          <pre><code><span class="t-com"># Create a new branch and switch to it immediately</span>
+<span class="t-cmd">git</span> checkout <span class="t-flag">-b</span> <span class="t-str">add-scoreboard</span>
+
+<span class="t-com"># Check which branch you are currently on</span>
+<span class="t-cmd">git</span> branch
+
+<span class="t-com"># Switch to a different branch that already exists</span>
+<span class="t-cmd">git</span> checkout <span class="t-str">main</span>
+
+<span class="t-com"># After committing, push the new branch to GitHub</span>
+<span class="t-cmd">git</span> push <span class="t-flag">--set-upstream</span> origin <span class="t-str">add-scoreboard</span></code></pre>
+        </div>
+        <div class="callout info"><span class="callout-icon">ℹ️</span><p>You only need <code class="inline">--set-upstream origin branch-name</code> the <em>first</em> time you push a new branch. After that, <code class="inline">git push</code> is enough.</p></div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 12 — Pull Requests & Merging
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step12">
+      <div class="section-header">
+        <span class="section-number">Step 12</span>
+        <h2>Pull Requests &amp; Merging</h2>
+      </div>
+      <p>Once your work on a branch is complete, the next step is to merge it back into <code class="inline">main</code>. On GitHub, this is done through a <strong>Pull Request</strong> (PR) — a proposal to merge your branch that can be reviewed and discussed before it is accepted.</p>
+
+      <div class="sub-section-label">
+        <span class="badge">Part A</span> Create a Pull Request on GitHub
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body"><p>After pushing your branch to GitHub, go to your repository page. GitHub will usually show a yellow banner saying <em>"Your branch had recent pushes"</em> with a <strong>Compare &amp; pull request</strong> button. Click it.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body">
+            <p>On the Pull Request page, fill in a <strong>title</strong> and a <strong>description</strong> explaining what this branch does and why it should be merged.</p>
+            <div class="callout info"><span class="callout-icon">ℹ️</span><p>At the top of the page, confirm the arrows show the correct direction: <code class="inline">add-scoreboard</code> → <code class="inline">main</code>. You are merging your branch <em>into</em> main, not the other way around.</p></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot">3</div>
+          <div class="step-body"><p>Click <strong>Create pull request</strong>. The PR is now open and can be reviewed.</p></div>
+        </div>
+      </div>
+
+      <div class="sub-section-label" style="margin-top:2rem;">
+        <span class="badge">Part B</span> Review and Approve
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body"><p>In the PR, click the <strong>Files changed</strong> tab to see exactly what was added, removed, or modified. Lines in <span style="color:var(--accent2);">green</span> are additions; lines in <span style="color:var(--accent3);">red</span> are deletions.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body"><p>Reviewers can click on any line to leave a comment. If you are working alone, you can review your own changes here before merging as a final check.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-dot">3</div>
+          <div class="step-body"><p>Once satisfied, click <strong>Review changes → Approve</strong> (if you are a reviewer), then go back to the <strong>Conversation</strong> tab.</p></div>
+        </div>
+      </div>
+
+      <div class="sub-section-label" style="margin-top:2rem;">
+        <span class="badge">Part C</span> Merge the Branch
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body"><p>Click <strong>Merge pull request</strong>, then <strong>Confirm merge</strong>. Your branch is now merged into <code class="inline">main</code>.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body">
+            <p>Click <strong>Delete branch</strong> to remove the feature branch from GitHub — it is no longer needed now that the work is merged.</p>
+            <div class="callout tip"><span class="callout-icon">💡</span><p>After merging, switch back to <code class="inline">main</code> on your computer and pull the latest changes so your local copy is up to date:</p>
+            <div class="code-block" style="margin-top:0.6rem;">
+              <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+              <pre><code><span class="t-cmd">git</span> checkout main
+<span class="t-cmd">git</span> pull</code></pre>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-section-label" style="margin-top:2rem;">
+        <span class="badge">Part D</span> Reverting a Merge You Regret
+      </div>
+      <p>If you merged something that broke the project, you can revert the merge commit on GitHub directly, or use the terminal.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body">
+            <p><strong>Via GitHub (easiest):</strong> Go to the closed Pull Request on GitHub. At the bottom, GitHub shows a <strong>Revert</strong> button. Click it — GitHub will automatically create a new PR that undoes the merge. Merge that new PR to restore the previous state.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body">
+            <p><strong>Via terminal:</strong> Find the merge commit ID with <code class="inline">git log --oneline</code>, then revert it:</p>
+            <div class="code-block">
+              <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+              <pre><code><span class="t-com"># Revert a merge commit — the -m 1 flag tells Git to keep the main branch side</span>
+<span class="t-cmd">git</span> revert <span class="t-flag">-m</span> 1 <span class="t-str">&lt;merge-commit-id&gt;</span>
+<span class="t-cmd">git</span> push</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STEP 13 — Collaborating on GitHub
+    ══════════════════════════════════════════════════════════════ -->
+    <section class="section" id="step13">
+      <div class="section-header">
+        <span class="section-number">Step 13</span>
+        <h2>Collaborating on GitHub</h2>
+      </div>
+      <p>GitHub is built for teamwork. When multiple people work on the same repository, a few extra concepts and habits become important.</p>
+
+      <div class="sub-section-label">
+        <span class="badge">Part A</span> Adding Collaborators
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body"><p>On your repository page, go to <strong>Settings → Collaborators</strong>.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body"><p>Click <strong>Add people</strong> and search for your teammate's GitHub username. They will receive an email invitation and will need to accept it before they can push changes.</p></div>
+        </div>
+      </div>
+
+      <div class="sub-section-label" style="margin-top:2rem;">
+        <span class="badge">Part B</span> The Collaboration Workflow
+      </div>
+      <p>When working with teammates, everyone follows the same pattern to avoid overwriting each other's work:</p>
+
+      <div class="collab-grid">
+        <div class="collab-card">
+          <h4>🔄 Before you start</h4>
+          <p>Always pull the latest changes from <code class="inline">main</code> before creating a branch or starting new work. This ensures you are building on the most recent version.</p>
+          <div class="code-block" style="margin-top:0.6rem;">
+            <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+            <pre><code><span class="t-cmd">git</span> checkout main
+<span class="t-cmd">git</span> pull</code></pre>
+          </div>
+        </div>
+        <div class="collab-card">
+          <h4>🌿 While you work</h4>
+          <p>Always work on a dedicated branch, never directly on <code class="inline">main</code>. Push your branch regularly so your teammates can see your progress and so your work is backed up on GitHub.</p>
+          <div class="code-block" style="margin-top:0.6rem;">
+            <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+            <pre><code><span class="t-cmd">git</span> checkout <span class="t-flag">-b</span> <span class="t-str">your-feature</span>
+<span class="t-com"># ... make changes, stage, commit ...</span>
+<span class="t-cmd">git</span> push</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-section-label" style="margin-top:2rem;">
+        <span class="badge">Part C</span> Handling Merge Conflicts
+      </div>
+      <p>A <strong>merge conflict</strong> happens when two people edit the same part of the same file. Git does not know which version to keep, so it asks you to decide.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-dot">1</div>
+          <div class="step-body">
+            <p>When a conflict occurs during a pull or merge, Git marks the affected file with special symbols:</p>
+            <div class="code-block no-copy">
+              <div class="code-block-header"><span class="code-lang">example — conflicted file</span></div>
+              <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+score = 0          ← your version
+=======
+score = 10         ← teammate's version
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; main</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <div class="step-body">
+            <p>In VS Code, conflicted files are highlighted. VS Code will show buttons above the conflict: <strong>Accept Current Change</strong>, <strong>Accept Incoming Change</strong>, or <strong>Accept Both Changes</strong>. Click the one that reflects the correct version, or edit the file manually to combine both changes.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot">3</div>
+          <div class="step-body">
+            <p>After resolving all conflicts, stage and commit the resolved file:</p>
+            <div class="code-block">
+              <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">&#10697; Copy</button></div>
+              <pre><code><span class="t-cmd">git</span> add .
+<span class="t-cmd">git</span> commit <span class="t-flag">-m</span> <span class="t-str">"Resolve merge conflict in score.py"</span>
+<span class="t-cmd">git</span> push</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout tip"><span class="callout-icon">💡</span><p><strong>The best way to avoid merge conflicts</strong> is for each teammate to work on different files or different sections of the project. Communicate with your team about who is working on what before you start.</p></div>
+
+      <div class="sub-section-label" style="margin-top:2rem;">
+        <span class="badge">Part D</span> Fork vs. Clone
+      </div>
+      <p>You may encounter these two terms when working with other people's repositories on GitHub.</p>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>📥 Clone</h4>
+          <p>Downloads a copy of a repository to your computer. You use this for repositories you are a <strong>collaborator</strong> on — you can push changes back to the original.</p>
+        </div>
+        <div class="compare-card">
+          <h4>🍴 Fork</h4>
+          <p>Creates your own personal copy of someone <em>else's</em> repository on GitHub. You use this when you are <strong>not</strong> a collaborator. Changes you make stay in your fork until you open a PR to the original repo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <div style="margin-top:4rem;padding-top:1.5rem;border-top:1px solid var(--border);font-size:0.78rem;color:var(--text-muted);">
+      Made for Algorithmics Coding School &nbsp;·&nbsp; <a href="https://git-scm.com/doc" target="_blank">Official Git Docs</a> &nbsp;·&nbsp; <a href="https://docs.github.com" target="_blank">GitHub Docs</a>
+    </div>
+
+  </main>
+</div><!-- /layout -->
+
+<script>
+  /* ── Tab system ──────────────────────────────────────────────── */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group    = btn.dataset.group;
+      const targetId = btn.dataset.target;
+      if (!group || !targetId) return;
+
+      // Deactivate all buttons in this group
+      document.querySelectorAll(`.tab-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Find the tab bar, then deactivate only its DIRECT sibling panes.
+      // Using Array.from(parent.children) instead of querySelectorAll('.tab-pane')
+      // prevents accidentally deactivating panes from nested tab groups in the same section.
+      const tabBar = document.getElementById(group);
+      if (!tabBar) return;
+      Array.from(tabBar.parentElement.children).forEach(el => {
+        if (el.classList.contains('tab-pane')) el.classList.remove('active');
+      });
+
+      const target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  /* ── Copy buttons ─────────────────────────────────────────────── */
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pre = btn.closest('.code-block').querySelector('pre');
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.classList.add('copied');
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.textContent = '⎘ Copy';
+        }, 2000);
+      });
+    });
+  });
+
+  /* ── Sidebar active link on scroll ────────────────────────────── */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('.sidebar nav a');
+  const observer  = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${entry.target.id}`));
+      }
+    });
+  }, { rootMargin: '-20% 0px -65% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
